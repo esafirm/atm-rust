@@ -19,6 +19,12 @@ enum Commands {
     Transfer { amount: f64, to: String },
 }
 
+impl Commands {
+    fn variants() -> &'static [&'static str] {
+        &["login", "logout", "deposit", "withdraw", "transfer"]
+    }
+}
+
 struct Balance {
     amount: f64,
 }
@@ -57,12 +63,12 @@ fn main() {
     let mut state = StateMachine::new();
     let mut balances: HashMap<String, Balance> = HashMap::new();
 
-    const COMMANDS: &[&str] = &["login", "logout", "deposit", "withdraw", "transfer"];
+    let commands = Commands::variants();
 
     loop {
         atm_rust::printterm("");
 
-        let input = atm_rust::read_line_with_autocomplete(COMMANDS);
+        let input = atm_rust::read_line_with_autocomplete(commands);
         if input == "exit" {
             break;
         }
