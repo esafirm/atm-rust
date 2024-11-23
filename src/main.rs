@@ -1,8 +1,7 @@
+mod getch;
+
 use clap::{Parser, Subcommand};
-use std::{
-    collections::HashMap,
-    io::{self, Write},
-};
+use std::collections::HashMap;
 
 #[derive(Parser, Debug)]
 #[command(author, about)]
@@ -35,6 +34,14 @@ struct StateMachine {
     logged_in_user: Option<String>,
 }
 
+impl StateMachine {
+    fn new() -> Self {
+        Self {
+            logged_in_user: None,
+        }
+    }
+}
+
 fn get_or_create_balance<'a>(
     balances: &'a mut HashMap<String, Balance>,
     user: &str,
@@ -47,20 +54,15 @@ fn get_or_create_balance<'a>(
 fn main() {
     println!("Welcome to the Bank Bank Toot ATM! Type 'exit' to quit.");
 
-    let mut state = StateMachine {
-        logged_in_user: None,
-    };
-
+    let mut state = StateMachine::new();
     let mut balances: HashMap<String, Balance> = HashMap::new();
 
+    const COMMANDS: &[&str] = &["login", "logout", "deposit", "withdraw", "transfer"];
+
     loop {
-        print!("> ");
-        io::stdout().flush().unwrap();
+        atm_rust::printterm("");
 
-        let mut input = String::new();
-        io::stdin().read_line(&mut input).unwrap();
-        let input = input.trim();
-
+        let input = atm_rust::read_line_with_autocomplete(COMMANDS);
         if input == "exit" {
             break;
         }
